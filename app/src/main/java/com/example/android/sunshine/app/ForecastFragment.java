@@ -4,6 +4,8 @@ package com.example.android.sunshine.app;
  * Created by Rae on 9/24/2015.
  */
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,9 +18,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,13 +77,26 @@ public class ForecastFragment extends Fragment {
                 R.id.list_item_forecast_textview,
                 weekForecast);
 
-
-        //new FetchWeatherTask().execute("Windsor, CO");
-
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
+
+        FetchWeatherTask task = new FetchWeatherTask();
+        task.execute("Windsor, CO");
+
+        listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //Context context = getActivity().getApplicationContext();
+                String text = mForecastAdapter.getItem(i);
+                Intent detailIntent = new Intent(getActivity(),DetailActivity.class);
+                Bundle extras = new Bundle();
+                extras.putString("detail", text);
+                detailIntent.putExtras(extras);
+                startActivity(detailIntent);
+            }
+        });
         return rootView;
     }
 
@@ -202,7 +219,7 @@ public class ForecastFragment extends Fragment {
             }
 
             for (String s : resultStrs) {
-                Log.v(LOG_TAG, "Forecast entry: " + s);
+                //Log.v(LOG_TAG, "Forecast entry: " + s);
             }
             return resultStrs;
 
@@ -224,26 +241,26 @@ public class ForecastFragment extends Fragment {
             String format = "json";
             String units = "imperial";
             int numDays = 7;
-            String apiId = "APPID";
 
             try {
                 // Construct the URL for the OpenWeatherMap query
                 // Possible parameters are avaiable at OWM's forecast API page, at
                 // http://openweathermap.org/API#forecast
                 final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
-                final String API_KEY = "f54da8b9067eae28cdd6062dd24aacc1";
                 final String QUERY_PARAM = "q";
                 final String FORMAT_PARAM = "mode";
                 final String UNITS_PARAM = "units";
                 final String DAYS_PARAM = "cnt";
+                final String appId = "APPID";
+                final String API_KEY = "f54da8b9067eae28cdd6062dd24aacc1";
                 Uri uri = Uri.parse(FORECAST_BASE_URL).buildUpon()
                         .appendQueryParameter(QUERY_PARAM, params[0])
                         .appendQueryParameter(FORMAT_PARAM, format)
                         .appendQueryParameter(UNITS_PARAM, units)
                         .appendQueryParameter(DAYS_PARAM, "" + numDays)
-                        .appendQueryParameter(apiId, API_KEY)
+                        .appendQueryParameter(appId, API_KEY)
                         .build();
-                Log.v(TAG, "Built URI " + uri.toString());
+                //Log.v(TAG, "Built URI " + uri.toString());
                 URL url = new URL(uri.toString());
 
                 // Create the request to OpenWeatherMap, and open the connection
@@ -273,7 +290,7 @@ public class ForecastFragment extends Fragment {
                     return null;
                 }
                 forecastJsonStr = buffer.toString();
-                Log.v(TAG, "Forecast JSON String: " + forecastJsonStr);
+                //Log.v(TAG, "Forecast JSON String: " + forecastJsonStr);
             } catch (IOException e) {
                 Log.e(TAG, "Error ", e);
                 // If the code didn't successfully get the weather data, there's no point in attemping
@@ -294,7 +311,7 @@ public class ForecastFragment extends Fragment {
             try {
                 String [] returnValue = getWeatherDataFromJson(forecastJsonStr, numDays);
                 for (String value:returnValue) {
-                    Log.i(LOG_TAG, value);
+                    //Log.i(LOG_TAG, value);
                 }
                 return returnValue;
             } catch (JSONException e) {
