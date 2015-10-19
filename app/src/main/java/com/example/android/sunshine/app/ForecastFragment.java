@@ -6,9 +6,11 @@ package com.example.android.sunshine.app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -36,8 +38,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -59,44 +60,33 @@ public class ForecastFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        String[] forecastArray = {
-                "Today -- Sunny -- 88/63",
-                "Tomorrow -- Foggy -- 70/46",
-                "Thurs -- Cloudy -- 72/63",
-                "Fri -- Rainy -- 64/51",
-                "Sat -- Foggy -- 70/46",
-                "Sun -- Sunny -- 76/68"
-        };
-
-        List<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
-
-
         mForecastAdapter = new ArrayAdapter<String>(
                 getActivity(),
                 R.layout.list_item_forecast,
                 R.id.list_item_forecast_textview,
-                weekForecast);
+                new ArrayList<String>());
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
 
-        FetchWeatherTask task = new FetchWeatherTask();
-        task.execute("Windsor, CO");
-
-        listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 //Context context = getActivity().getApplicationContext();
                 String text = mForecastAdapter.getItem(i);
-                Intent detailIntent = new Intent(getActivity(),DetailActivity.class);
+                Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
                 Bundle extras = new Bundle();
                 extras.putString("detail", text);
                 detailIntent.putExtras(extras);
                 startActivity(detailIntent);
             }
         });
+
+        FetchWeatherTask task = new FetchWeatherTask();
+        task.execute("Windsor, CO");
+
         return rootView;
     }
 
@@ -115,11 +105,27 @@ public class ForecastFragment extends Fragment {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
             FetchWeatherTask task = new FetchWeatherTask();
-            task.execute("Windsor, CO");
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String location = sharedPref.getString(getString(R.string.pref_location_key),
+                    getString(R.string.pref_location_default));
+            task.execute(location);
+
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FetchWeatherTask task = new FetchWeatherTask();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = sharedPref.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+        task.execute(location);
+
+    }
+
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
@@ -260,7 +266,7 @@ public class ForecastFragment extends Fragment {
                         .appendQueryParameter(DAYS_PARAM, "" + numDays)
                         .appendQueryParameter(appId, API_KEY)
                         .build();
-                //Log.v(TAG, "Built URI " + uri.toString());
+                Log.v(TAG, "Built URI " + uri.toString());
                 URL url = new URL(uri.toString());
 
                 // Create the request to OpenWeatherMap, and open the connection
