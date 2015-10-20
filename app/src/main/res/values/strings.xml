@@ -22,5 +22,9 @@
     <string name="pref_location_label">Location</string>
     <string name="pref_location_key" translatable="false">Location</string>
     <string name="pref_location_default" translatable="false">Windsor, CO</string>
+    <string name="pref_temperature_unit_label" translatable="false">Units</string>
+    <string name="pref_temperature_unit_key">Units</string>
+    <string name="pref_temperature_unit_metric">Metric</string>
+    <string name="pref_temperature_unit_imperial">Imperial</string>
 
 </resources>
