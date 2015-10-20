@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
@@ -84,8 +85,7 @@ public class ForecastFragment extends Fragment {
             }
         });
 
-        FetchWeatherTask task = new FetchWeatherTask();
-        task.execute("Windsor, CO");
+        runFetchWeatherTask();
 
         return rootView;
     }
@@ -104,11 +104,7 @@ public class ForecastFragment extends Fragment {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
-            FetchWeatherTask task = new FetchWeatherTask();
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String location = sharedPref.getString(getString(R.string.pref_location_key),
-                    getString(R.string.pref_location_default));
-            task.execute(location);
+            runFetchWeatherTask();
 
             return true;
         }
@@ -118,12 +114,15 @@ public class ForecastFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        FetchWeatherTask task = new FetchWeatherTask();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String location = sharedPref.getString(getString(R.string.pref_location_key),
-                getString(R.string.pref_location_default));
-        task.execute(location);
+        runFetchWeatherTask();
 
+    }
+
+    private void runFetchWeatherTask() {
+        FetchWeatherTask task = new FetchWeatherTask();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = sharedPreferences.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+        task.execute(location);
     }
 
 
