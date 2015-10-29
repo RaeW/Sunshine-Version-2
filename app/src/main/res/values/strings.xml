@@ -18,11 +18,13 @@
     <string name="action_refresh" translatable="false">Refresh</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_detail">DetailActivity</string>
+
     <!-- Label for the location preference [CHAR_LIMIT=30] -->
     <string name="pref_location_label">Location</string>
     <string name="pref_location_key" translatable="false">Location</string>
     <string name="pref_location_default" translatable="false">Windsor, CO</string>
     <string name="pref_temperature_unit_label" translatable="false">Units</string>
+    <string name="pref_temperature_unit_dialog_title" translatable="true">Pick Your Units</string>
     <string name="pref_temperature_unit_key">Units</string>
     <string name="pref_temperature_unit_metric">Metric</string>
     <string name="pref_temperature_unit_imperial">Imperial</string>
