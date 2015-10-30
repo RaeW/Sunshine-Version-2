@@ -13,6 +13,7 @@
          typically from the action bar.  The ActionBar is limited real estate, so shorter is better.
     -->
     <string name="action_settings">Settings</string>
+    <string name="map_location">Map Location</string>
 
     <!-- Menu label to fetch updated weather info from the server -->
     <string name="action_refresh" translatable="false">Refresh</string>
@@ -26,8 +27,9 @@
     <string name="pref_temperature_unit_label" translatable="false">Units</string>
     <string name="pref_temperature_unit_dialog_title" translatable="true">Pick Your Units</string>
     <string name="pref_temperature_unit_key">Units</string>
-    <string name="pref_temperature_unit_default">Metric</string>
+    <string name="pref_temperature_unit_default">Imperial</string>
     <string name="pref_temperature_unit_metric">Metric</string>
     <string name="pref_temperature_unit_imperial">Imperial</string>
+
 
 </resources>
