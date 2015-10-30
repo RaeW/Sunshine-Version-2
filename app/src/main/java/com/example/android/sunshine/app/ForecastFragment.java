@@ -146,11 +146,10 @@ public class ForecastFragment extends Fragment {
          */
         private String formatHighLows(double high, double low) {
             // TODO: get preference imperial vs. metric, convert to imperial if needed
-            // SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            // String location = sharedPreferences.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String units = sharedPreferences.getString(getString(R.string.pref_temperature_unit_key), getString(R.string.pref_temperature_unit_default));
-            if ("Imperial".equals(units)) {
+            String units = sharedPreferences.getString(getString(R.string.pref_temperature_unit_key),
+                    getString(R.string.pref_temperature_unit_default));
+            if (getString(R.string.pref_temperature_unit_imperial).equals(units)) {
                 high = high * 9 / 5 + 32;
                 low = low * 9 / 5 + 32;
             }
