@@ -145,6 +145,16 @@ public class ForecastFragment extends Fragment {
          * Prepare the weather high/lows for presentation.
          */
         private String formatHighLows(double high, double low) {
+            // TODO: get preference imperial vs. metric, convert to imperial if needed
+            // SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            // String location = sharedPreferences.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String units = sharedPreferences.getString(getString(R.string.pref_temperature_unit_key), getString(R.string.pref_temperature_unit_default));
+            if ("Imperial".equals(units)) {
+                high = high * 9 / 5 + 32;
+                low = low * 9 / 5 + 32;
+            }
+
             // For presentation, assume the user doesn't care about tenths of a degree.
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
@@ -244,7 +254,7 @@ public class ForecastFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String forecastJsonStr = null;
             String format = "json";
-            String units = "imperial";
+            final String units = "metric";
             int numDays = 7;
 
             try {

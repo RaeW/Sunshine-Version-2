@@ -26,6 +26,7 @@
     <string name="pref_temperature_unit_label" translatable="false">Units</string>
     <string name="pref_temperature_unit_dialog_title" translatable="true">Pick Your Units</string>
     <string name="pref_temperature_unit_key">Units</string>
+    <string name="pref_temperature_unit_default">Metric</string>
     <string name="pref_temperature_unit_metric">Metric</string>
     <string name="pref_temperature_unit_imperial">Imperial</string>
 
