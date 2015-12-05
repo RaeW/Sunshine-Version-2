@@ -266,7 +266,6 @@ public class ForecastFragment extends Fragment {
                 final String UNITS_PARAM = "units";
                 final String DAYS_PARAM = "cnt";
                 final String appId = "APPID";
-                //final String API_KEY = "f54da8b9067eae28cdd6062dd24aacc1";
                 Uri uri = Uri.parse(FORECAST_BASE_URL).buildUpon()
                         .appendQueryParameter(QUERY_PARAM, params[0])
                         .appendQueryParameter(FORMAT_PARAM, format)
