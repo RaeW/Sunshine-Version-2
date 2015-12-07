@@ -117,14 +117,18 @@ public class WeatherProvider extends ContentProvider {
   static UriMatcher buildUriMatcher() {
     // 1) The code passed into the constructor represents the code to return for the root
     // URI.  It's common to use NO_MATCH as the code for this case. Add the constructor below.
-
+    final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    final String authority = WeatherContract.CONTENT_AUTHORITY;
 
     // 2) Use the addURI function to match each of the types.  Use the constants from
     // WeatherContract to help define the types to the UriMatcher.
-
+    uriMatcher.addURI(authority, WeatherContract.PATH_WEATHER, WEATHER);
+    uriMatcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*", WEATHER_WITH_LOCATION);
+    uriMatcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*/#", WEATHER_WITH_LOCATION_AND_DATE);
+    uriMatcher.addURI(authority, WeatherContract.PATH_LOCATION, LOCATION);
 
     // 3) Return the new matcher!
-    return null;
+    return uriMatcher;
   }
 
   /*
@@ -149,8 +153,10 @@ public class WeatherProvider extends ContentProvider {
 
     switch (match) {
       // Student: Uncomment and fill out these two cases
-//            case WEATHER_WITH_LOCATION_AND_DATE:
-//            case WEATHER_WITH_LOCATION:
+      case WEATHER_WITH_LOCATION_AND_DATE:
+        return WeatherContract.WeatherEntry.CONTENT_ITEM_TYPE;
+      case WEATHER_WITH_LOCATION:
+        return WeatherContract.WeatherEntry.CONTENT_TYPE;
       case WEATHER:
         return WeatherContract.WeatherEntry.CONTENT_TYPE;
       case LOCATION:
@@ -180,12 +186,28 @@ public class WeatherProvider extends ContentProvider {
       }
       // "weather"
       case WEATHER: {
-        retCursor = null;
+        retCursor = mOpenHelper.getReadableDatabase().query(
+                WeatherContract.WeatherEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
+        );
         break;
       }
       // "location"
       case LOCATION: {
-        retCursor = null;
+        retCursor = mOpenHelper.getReadableDatabase().query(
+                WeatherContract.LocationEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
+        );
         break;
       }
 
@@ -215,10 +237,19 @@ public class WeatherProvider extends ContentProvider {
           throw new android.database.SQLException("Failed to insert row into " + uri);
         break;
       }
+        case LOCATION: {
+            long _id = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, values);
+            if (_id > 0)
+                returnUri = WeatherContract.LocationEntry.buildLocationUri(_id);
+            else
+                throw new android.database.SQLException("Failed to insert row into " + uri);
+            break;
+        }
       default:
         throw new UnsupportedOperationException("Unknown uri: " + uri);
     }
     getContext().getContentResolver().notifyChange(uri, null);
+      db.close();
     return returnUri;
   }
 
