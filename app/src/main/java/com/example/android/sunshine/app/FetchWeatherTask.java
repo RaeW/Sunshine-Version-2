@@ -15,6 +15,7 @@
  */
 package com.example.android.sunshine.app;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -114,12 +115,31 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         // Students: First, check if the location with this city name exists in the db
         // If it exists, return the current ID
         // Otherwise, insert it using the content resolver and the base URI
+        long locationId;
         Cursor query = mContext.getContentResolver().query(
                 WeatherContract.LocationEntry.CONTENT_URI,
                 new String[] {WeatherContract.LocationEntry._ID},
+                WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ?",
+                new String[]{locationSetting},
+                null);
+        if (query.moveToFirst()) {
+            int locationIdIndex = query.getColumnIndex(WeatherContract.LocationEntry._ID);
+            locationId = query.getLong(locationIdIndex);
+        } else {
+            ContentValues locationValues = new ContentValues();
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, cityName);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, locationSetting);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, lat);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, lon);
 
-                );
-        return -1;
+            Uri insertedUri = mContext.getContentResolver().insert(
+                    WeatherContract.LocationEntry.CONTENT_URI,
+                    locationValues
+            );
+            locationId = ContentUris.parseId(insertedUri);
+        }
+        query.close();
+        return locationId;
     }
 
     /*
