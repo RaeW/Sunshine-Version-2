@@ -41,3 +41,6 @@ project.properties
 ##Gradle-based build
 .gradle
 build/
+
+# hidden values (e.g. api keys)
+/app/src/main/res/values/private_strings.xml
